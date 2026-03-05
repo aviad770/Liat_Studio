@@ -22,7 +22,7 @@ const queryClient = new QueryClient({
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter basename="/Liat_Studio/">
+      <BrowserRouter>
         <Routes>
           <Route element={<AppShell />}>
             <Route index element={<PantryPage />} />
