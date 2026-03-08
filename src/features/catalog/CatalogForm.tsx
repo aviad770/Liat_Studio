@@ -66,10 +66,7 @@ export function CatalogForm({ initial, onSubmit, onCancel, isLoading }: CatalogF
       {/* Image upload */}
       <div>
         <label className="block text-sm font-medium text-sand-700 mb-1">תמונה</label>
-        <div
-          onClick={() => fileInputRef.current?.click()}
-          className="cursor-pointer"
-        >
+        <label htmlFor="catalog-image-input" className="cursor-pointer block">
           {imagePreview ? (
             <img
               src={imagePreview}
@@ -81,21 +78,18 @@ export function CatalogForm({ initial, onSubmit, onCancel, isLoading }: CatalogF
               🏺
             </div>
           )}
-        </div>
+          <div className="w-full py-2 border border-sand-300 rounded-lg text-sand-700 text-sm min-h-[44px] flex items-center justify-center">
+            {imagePreview ? 'החלף תמונה' : 'בחר תמונה'}
+          </div>
+        </label>
         <input
+          id="catalog-image-input"
           ref={fileInputRef}
           type="file"
           accept="image/*"
           onChange={handleFileChange}
           className="hidden"
         />
-        <button
-          type="button"
-          onClick={() => fileInputRef.current?.click()}
-          className="w-full py-2 border border-sand-300 rounded-lg text-sand-700 text-sm min-h-[44px]"
-        >
-          {imagePreview ? 'החלף תמונה' : 'בחר תמונה'}
-        </button>
       </div>
 
       {/* Description */}
