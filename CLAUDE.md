@@ -37,21 +37,23 @@ liat-studio/
 ├── .env.example                    # Template for env vars
 ├── supabase-schema.sql             # Full DB schema — run in Supabase SQL Editor
 ├── index.html                      # Entry point (lang="he" dir="rtl")
-├── vite.config.ts                  # Vite + React + Tailwind, base: '/Liat_Studio/'
+├── vite.config.ts                  # Vite + React + Tailwind, base: '/'
+├── seed-data.sql                   # Seed data: 38 materials, 12 colorants, 16 recipes
 ├── src/
 │   ├── main.tsx                    # React root mount
 │   ├── App.tsx                     # QueryClient + BrowserRouter + Routes + Toaster
 │   ├── index.css                   # Tailwind v4 @theme: sand/terracotta/clay palettes
 │   ├── lib/
 │   │   ├── supabase.ts             # Supabase client (untyped — no Database generic)
-│   │   ├── database.types.ts       # All 7 table interfaces + Database type
+│   │   ├── database.types.ts       # All 8 table interfaces + Database type
 │   │   ├── schemas.ts              # Zod validation schemas (Hebrew error messages)
 │   │   └── utils.ts                # formatDate, formatWeight, gramsToKg, kgToGrams
 │   ├── components/
 │   │   ├── layout/
-│   │   │   ├── Header.tsx          # Terracotta header: ב״ה top-right, title centered
-│   │   │   ├── TabNavigation.tsx   # 7 horizontal scroll tabs with NavLink
-│   │   │   └── AppShell.tsx        # Header + TabNav + Outlet
+│   │   │   ├── Header.tsx          # Terracotta header: ב״ה top-left, ☰ hamburger top-right, title centered
+│   │   │   ├── TabNavigation.tsx   # 7 horizontal scroll tabs with NavLink (hidden on /catalog)
+│   │   │   ├── SideMenu.tsx        # Right-side hamburger drawer: סטודיו / קטלוג מכירות
+│   │   │   └── AppShell.tsx        # Header + SideMenu + conditional TabNav + Outlet
 │   │   └── ui/
 │   │       ├── Modal.tsx           # Bottom-sheet dialog (native <dialog>)
 │   │       └── StockBar.tsx        # Visual stock level indicator
@@ -75,12 +77,17 @@ liat-studio/
 │       ├── colorants/              # Pigment inventory (CRUD)
 │       │   ├── ColorantsPage.tsx
 │       │   └── useColorants.ts
-│       └── extras/                 # Additional materials (toggle in-stock)
-│           ├── ExtrasPage.tsx
-│           └── useExtras.ts
+│       ├── extras/                 # Additional materials (toggle in-stock)
+│       │   ├── ExtrasPage.tsx
+│       │   └── useExtras.ts
+│       └── catalog/                # Sales catalog (product inventory with images)
+│           ├── CatalogPage.tsx     # 2-column grid, filter pills (הכל/במלאי/נמכרו)
+│           ├── CatalogCard.tsx     # Product card with image, status badge
+│           ├── CatalogForm.tsx     # Form with image upload (Supabase Storage)
+│           └── useCatalog.ts       # CRUD hooks + useUploadCatalogImage
 ```
 
-## Database Schema (7 tables)
+## Database Schema (8 tables)
 
 | Table | Purpose | Key Fields |
 |-------|---------|------------|
@@ -91,6 +98,7 @@ liat-studio/
 | `batches` | Production/preparation log | recipe_id, quantity_kg |
 | `colorants` | Pigment inventory | color, catalog_number, supplier, quantity, price |
 | `additional_materials` | Misc studio items | name, in_stock, quantity |
+| `catalog` | Sales product catalog | image_url, description, clay_type, glaze_color, size, cost_price, in_stock, production_date, sale_price, sale_date |
 
 ### Database Functions
 - `update_updated_at()` — trigger on materials to auto-update `updated_at`
@@ -99,27 +107,37 @@ liat-studio/
 ### RLS
 - All tables have RLS enabled with permissive "allow all" policies (single-user app, no auth)
 
+### Supabase Storage
+- Bucket: `catalog-images` (public) — stores product photos for the catalog
+
 ### Seed Data
 - 7 default additional materials: חימר נוזלי, גלזורה שקופה ירוקה, גבס, CMC, מנגן, מי זכוכית, ליינר שחור
+- 38 materials (powders), 12 colorants, 16 glaze recipes with ingredients (see `seed-data.sql`)
 
 ## Routes
 
+### Studio tabs (tab navigation)
 | Path | Page | Tab Label |
 |------|------|-----------|
 | `/` | PantryPage | מחסן |
 | `/recipes` | RecipesPage | מתכונים |
 | `/batch` | BatchPage | הכנת גלזורה |
 | `/shopping` | ShoppingPage | הזמנות |
-| `/matrix` | MatrixPage | מטריצה |
+| `/matrix` | MatrixPage | טבלה |
 | `/colorants` | ColorantsPage | צובענים |
 | `/extras` | ExtrasPage | חומרים נוספים |
+
+### Catalog (hamburger menu, no tabs)
+| Path | Page | Menu Label |
+|------|------|------------|
+| `/catalog` | CatalogPage | קטלוג מכירות |
 
 ## Key Patterns
 
 ### Data Flow
 - **Supabase client** (`lib/supabase.ts`) — untyped `createClient()` (no Database generic, avoids type conflicts)
 - **Hooks** — each feature has a `use*.ts` file with `useQuery`/`useMutation` hooks
-- **Query keys**: `['materials']`, `['recipes', isTest]`, `['recipe', recipeId]`, `['colorants']`, `['additional_materials']`, `['test_iterations', recipeId]`, `['batches']`, `['all_recipe_ingredients', recipeIds]`
+- **Query keys**: `['materials']`, `['recipes', isTest]`, `['recipe', recipeId]`, `['colorants']`, `['additional_materials']`, `['test_iterations', recipeId]`, `['batches']`, `['all_recipe_ingredients', recipeIds]`, `['catalog']`
 - **Mutations** invalidate relevant query keys and show toast notifications
 - **QueryClient config**: `staleTime: 0`, `refetchOnWindowFocus: true`
 
@@ -183,5 +201,8 @@ npm run preview  # Preview production build locally
 - **Supabase Free tier** — 500MB DB, 1GB bandwidth, may pause after 1 week inactivity
 - **Supabase client is untyped** — Database generic was removed to avoid type conflicts with supabase-js SDK. Types are cast manually in hooks.
 - **All UI text is Hebrew** — error messages, labels, placeholders, toasts
-- **Header displays ב״ה** (with God's help) in top-right corner — required by the user
+- **Header displays ב״ה** (with God's help) in top-left corner — required by the user
+- **Hamburger menu ☰** in header top-right — navigates between Studio (tabs) and Catalog (no tabs)
+- **GitHub Pages SPA routing** — `public/404.html` redirects to index.html with path preserved
+- **Supabase Storage** — `catalog-images` bucket for product photo uploads
 - **Title**: "הסטודיו של ליאת" (Liat's Studio)
