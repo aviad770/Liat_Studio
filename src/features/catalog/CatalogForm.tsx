@@ -81,7 +81,6 @@ export function CatalogForm({ initial, onSubmit, onCancel, isLoading }: CatalogF
           ref={fileInputRef}
           type="file"
           accept="image/*"
-          capture="environment"
           onChange={handleFileChange}
           className="hidden"
         />
