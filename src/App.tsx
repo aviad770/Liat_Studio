@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Toaster } from 'react-hot-toast'
 import { AppShell } from './components/layout/AppShell'
+import { SplashScreen } from './components/SplashScreen'
 import { PantryPage } from './features/pantry/PantryPage'
 import { RecipesPage } from './features/recipes/RecipesPage'
 import { BatchPage } from './features/batch/BatchPage'
@@ -20,26 +21,6 @@ const queryClient = new QueryClient({
     },
   },
 })
-
-function SplashScreen({ onDone }: { onDone: () => void }) {
-  const [fadeOut, setFadeOut] = useState(false)
-
-  useEffect(() => {
-    const fadeTimer = setTimeout(() => setFadeOut(true), 1800)
-    const doneTimer = setTimeout(onDone, 2300)
-    return () => { clearTimeout(fadeTimer); clearTimeout(doneTimer) }
-  }, [onDone])
-
-  return (
-    <div
-      className={`fixed inset-0 z-50 flex items-center justify-center bg-terracotta-600 transition-opacity duration-500 ${
-        fadeOut ? 'opacity-0' : 'opacity-100'
-      }`}
-    >
-      <h1 className="text-white text-3xl font-bold">Hello my Love</h1>
-    </div>
-  )
-}
 
 function App() {
   const [showSplash, setShowSplash] = useState(true)
