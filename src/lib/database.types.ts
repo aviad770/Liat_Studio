@@ -36,8 +36,28 @@ export interface Database {
         Insert: Omit<AdditionalMaterial, 'id' | 'created_at'>
         Update: Partial<Omit<AdditionalMaterial, 'id' | 'created_at'>>
       }
+      catalog: {
+        Row: CatalogItem
+        Insert: Omit<CatalogItem, 'id' | 'created_at'>
+        Update: Partial<Omit<CatalogItem, 'id' | 'created_at'>>
+      }
     }
   }
+}
+
+export interface CatalogItem {
+  id: string
+  image_url: string
+  description: string
+  clay_type: string
+  glaze_color: string
+  size: string
+  cost_price: number
+  in_stock: boolean
+  production_date: string
+  sale_price: number
+  sale_date: string | null
+  created_at: string
 }
 
 export interface Material {

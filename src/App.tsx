@@ -9,6 +9,7 @@ import { ShoppingPage } from './features/shopping/ShoppingPage'
 import { MatrixPage } from './features/matrix/MatrixPage'
 import { ColorantsPage } from './features/colorants/ColorantsPage'
 import { ExtrasPage } from './features/extras/ExtrasPage'
+import { CatalogPage } from './features/catalog/CatalogPage'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -32,6 +33,7 @@ function App() {
             <Route path="matrix" element={<MatrixPage />} />
             <Route path="colorants" element={<ColorantsPage />} />
             <Route path="extras" element={<ExtrasPage />} />
+            <Route path="catalog" element={<CatalogPage />} />
           </Route>
         </Routes>
       </BrowserRouter>

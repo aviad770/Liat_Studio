@@ -5,7 +5,7 @@ const tabs = [
   { path: '/recipes', label: 'מתכונים' },
   { path: '/batch', label: 'הכנת גלזורה' },
   { path: '/shopping', label: 'הזמנות' },
-  { path: '/matrix', label: 'מטריצה' },
+  { path: '/matrix', label: 'טבלה' },
   { path: '/colorants', label: 'צובענים' },
   { path: '/extras', label: 'חומרים נוספים' },
 ]

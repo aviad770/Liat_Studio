@@ -133,3 +133,29 @@ insert into additional_materials (name, in_stock, quantity) values
   ('מנגן', false, 0),
   ('מי זכוכית', false, 0),
   ('ליינר שחור', false, 0);
+
+-- Catalog (sales products)
+create table catalog (
+  id uuid primary key default uuid_generate_v4(),
+  image_url text not null default '',
+  description text not null default '',
+  clay_type text not null default '',
+  glaze_color text not null default '',
+  size text not null default '',
+  cost_price numeric(10,2) not null default 0,
+  in_stock boolean not null default true,
+  production_date date not null default current_date,
+  sale_price numeric(10,2) not null default 0,
+  sale_date date,
+  created_at timestamptz not null default now()
+);
+
+alter table catalog enable row level security;
+create policy "Allow all on catalog" on catalog for all using (true) with check (true);
+
+-- Storage bucket for catalog images (run in Supabase SQL Editor)
+-- insert into storage.buckets (id, name, public) values ('catalog-images', 'catalog-images', true);
+-- create policy "Allow public read on catalog-images" on storage.objects for select using (bucket_id = 'catalog-images');
+-- create policy "Allow all upload on catalog-images" on storage.objects for insert with check (bucket_id = 'catalog-images');
+-- create policy "Allow all update on catalog-images" on storage.objects for update using (bucket_id = 'catalog-images');
+-- create policy "Allow all delete on catalog-images" on storage.objects for delete using (bucket_id = 'catalog-images');

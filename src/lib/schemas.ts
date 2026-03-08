@@ -52,3 +52,17 @@ export const additionalMaterialSchema = z.object({
 })
 
 export type AdditionalMaterialInput = z.infer<typeof additionalMaterialSchema>
+
+export const catalogSchema = z.object({
+  description: z.string().min(1, 'תיאור מוצר חובה'),
+  clay_type: z.string().default(''),
+  glaze_color: z.string().default(''),
+  size: z.string().default(''),
+  cost_price: z.number().min(0, 'מחיר חייב להיות חיובי').default(0),
+  in_stock: z.boolean().default(true),
+  production_date: z.string().default(''),
+  sale_price: z.number().min(0, 'מחיר חייב להיות חיובי').default(0),
+  sale_date: z.string().nullable().default(null),
+})
+
+export type CatalogInput = z.infer<typeof catalogSchema>

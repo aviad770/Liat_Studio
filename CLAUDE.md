@@ -4,10 +4,13 @@ Ceramic studio management web app for Liat, a ceramic artist. Single-user app wi
 
 ## Quick Reference
 
-- **Live site**: https://aviad770.github.io/Liat_Studio/
+- **Live site**: https://liat-st.com (custom domain via GoDaddy)
+- **Alternate URL**: https://aviad770.github.io/Liat_Studio/ (redirects to custom domain)
 - **Repo**: https://github.com/aviad770/Liat_Studio
 - **Supabase project**: `imkcmsomzxfahkmvkozd` (Free tier, Southeast Asia region)
 - **Supabase URL**: https://imkcmsomzxfahkmvkozd.supabase.co
+- **Domain registrar**: GoDaddy (liat-st.com)
+- **Base path**: `/` (custom domain, no subdirectory)
 
 ## Tech Stack
 
@@ -160,7 +163,7 @@ These are set as GitHub Actions secrets for CI/CD builds.
 ## Commands
 
 ```bash
-npm run dev      # Start dev server (http://localhost:5173/Liat_Studio/)
+npm run dev      # Start dev server (http://localhost:5173/)
 npm run build    # TypeScript check + Vite production build
 npm run lint     # ESLint
 npm run preview  # Preview production build locally
@@ -168,9 +171,11 @@ npm run preview  # Preview production build locally
 
 ## Deployment
 
-- Push to `main` → GitHub Actions builds and deploys to GitHub Pages
+- Push to `main` → GitHub Actions builds and deploys to GitHub Pages → served at https://liat-st.com
 - Manual deploy: `gh workflow run deploy.yml`
-- Base path: `/Liat_Studio/` (configured in `vite.config.ts` and `BrowserRouter`)
+- Custom domain: `liat-st.com` (CNAME file in `public/CNAME`, DNS configured in GoDaddy)
+- Base path: `/` (root, since custom domain is used)
+- HTTPS enforced via GitHub Pages
 
 ## Important Notes
 

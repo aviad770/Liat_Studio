@@ -49,7 +49,7 @@ export function MatrixPage() {
       ) : !recipes?.length || !usedMaterials.length ? (
         <div className="text-center py-12">
           <p className="text-sand-500 text-lg mb-2">אין נתונים להצגה</p>
-          <p className="text-sand-400 text-sm">הוסף מתכונים עם רכיבים כדי לראות את המטריצה</p>
+          <p className="text-sand-400 text-sm">הוסף מתכונים עם רכיבים כדי לראות את הטבלה</p>
         </div>
       ) : (
         <div className="overflow-x-auto -mx-4 px-4">
