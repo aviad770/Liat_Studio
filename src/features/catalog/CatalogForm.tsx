@@ -66,17 +66,22 @@ export function CatalogForm({ initial, onSubmit, onCancel, isLoading }: CatalogF
       {/* Image upload */}
       <div>
         <label className="block text-sm font-medium text-sand-700 mb-1">תמונה</label>
-        {imagePreview ? (
-          <img
-            src={imagePreview}
-            alt="תצוגה מקדימה"
-            className="w-full h-48 object-cover rounded-lg mb-2"
-          />
-        ) : (
-          <div className="w-full h-48 bg-sand-100 rounded-lg flex items-center justify-center text-sand-400 text-5xl mb-2">
-            🏺
-          </div>
-        )}
+        <div
+          onClick={() => fileInputRef.current?.click()}
+          className="cursor-pointer"
+        >
+          {imagePreview ? (
+            <img
+              src={imagePreview}
+              alt="תצוגה מקדימה"
+              className="w-full h-48 object-cover rounded-lg mb-2"
+            />
+          ) : (
+            <div className="w-full h-48 bg-sand-100 rounded-lg flex items-center justify-center text-sand-400 text-5xl mb-2">
+              🏺
+            </div>
+          )}
+        </div>
         <input
           ref={fileInputRef}
           type="file"
