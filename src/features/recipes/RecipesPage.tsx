@@ -181,8 +181,6 @@ function RecipeDetail({
   const [weightRatio, setWeightRatio] = useState(0)
   const [newResult, setNewResult] = useState('')
 
-  const totalRatio = data?.ingredients.reduce((sum, i) => sum + i.weight_ratio, 0) ?? 0
-
   return (
     <div className="space-y-4">
       {recipe.description && <p className="text-sand-600">{recipe.description}</p>}
@@ -207,7 +205,7 @@ function RecipeDetail({
                 <span className="text-sand-800">{ing.materials.name}</span>
                 <div className="flex items-center gap-3">
                   <span className="text-sm text-sand-600">
-                    {totalRatio > 0 ? ((ing.weight_ratio / totalRatio) * 100).toFixed(1) : 0}%
+                    {ing.weight_ratio} גר'
                   </span>
                   <button
                     onClick={() => deleteIngredient.mutate({ id: ing.id, recipeId: recipe.id })}
@@ -235,7 +233,7 @@ function RecipeDetail({
             </select>
             <input
               type="number"
-              placeholder="יחס משקל"
+              placeholder="משקל (גרמים)"
               value={weightRatio || ''}
               onChange={(e) => setWeightRatio(Number(e.target.value))}
               className="w-full px-3 py-2 border border-sand-300 rounded-lg bg-white"
