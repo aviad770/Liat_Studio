@@ -42,6 +42,13 @@ export function PantryPage() {
     }
   }
 
+  const handleReceiveStock = (id: string, addedGrams: number) => {
+    if (isNaN(addedGrams) || addedGrams <= 0) return
+    const material = materials?.find((m) => m.id === id)
+    if (!material) return
+    updateMaterial.mutate({ id, quantity_grams: material.quantity_grams + addedGrams })
+  }
+
   if (error) {
     return (
       <div className="text-center py-8">
@@ -89,6 +96,7 @@ export function PantryPage() {
               material={material}
               onEdit={setEditingMaterial}
               onQuickUpdate={handleQuickUpdate}
+              onReceiveStock={handleReceiveStock}
             />
           ))}
         </div>

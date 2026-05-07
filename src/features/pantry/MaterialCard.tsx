@@ -6,9 +6,10 @@ interface MaterialCardProps {
   material: Material
   onEdit: (material: Material) => void
   onQuickUpdate: (id: string, quantityGrams: number) => void
+  onReceiveStock: (id: string, addedGrams: number) => void
 }
 
-export function MaterialCard({ material, onEdit, onQuickUpdate }: MaterialCardProps) {
+export function MaterialCard({ material, onEdit, onQuickUpdate, onReceiveStock }: MaterialCardProps) {
   const isLow = material.quantity_grams <= material.min_threshold
 
   return (
@@ -25,7 +26,21 @@ export function MaterialCard({ material, onEdit, onQuickUpdate }: MaterialCardPr
             <p className="text-xs text-sand-500">{material.supplier}</p>
           )}
         </div>
-        <div className="text-left">
+        <div className="text-left flex items-center gap-2">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation()
+              const received = prompt(`כמה גרם התקבלו של ${material.name}?`, '')
+              if (received !== null && received.trim() !== '') {
+                onReceiveStock(material.id, Number(received))
+              }
+            }}
+            className="text-sm bg-success/10 text-success border border-success/30 rounded-lg px-2 py-1 min-h-[32px] hover:bg-success/20"
+            title="קבלת חומר — הוספה למלאי"
+          >
+            + קבלה
+          </button>
           <span
             className={`text-lg font-bold ${isLow ? 'text-danger' : 'text-success'}`}
             onClick={(e) => {
