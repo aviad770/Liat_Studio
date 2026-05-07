@@ -27,8 +27,7 @@ interface EditableItem {
 type Phase = 'idle' | 'uploading' | 'analyzing' | 'done'
 
 export function ReceiptScanModal({ isOpen, onClose, materials, onApplied }: ReceiptScanModalProps) {
-  const galleryInputRef = useRef<HTMLInputElement>(null)
-  const cameraInputRef = useRef<HTMLInputElement>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const [imageUrl, setImageUrl] = useState<string | null>(null)
   const [items, setItems] = useState<EditableItem[]>([])
   const [applying, setApplying] = useState(false)
@@ -140,19 +139,7 @@ export function ReceiptScanModal({ isOpen, onClose, materials, onApplied }: Rece
               צלמי או בחרי תמונה של הקבלה. המערכת תזהה אוטומטית את החומרים והכמויות, ואת תוכלי לאשר לפני העדכון.
             </p>
             <input
-              ref={cameraInputRef}
-              type="file"
-              accept="image/*"
-              capture="environment"
-              className="hidden"
-              onChange={(e) => {
-                const file = e.target.files?.[0]
-                if (file) handleFileSelect(file)
-                e.target.value = ''
-              }}
-            />
-            <input
-              ref={galleryInputRef}
+              ref={fileInputRef}
               type="file"
               accept="image/*"
               className="hidden"
@@ -162,20 +149,12 @@ export function ReceiptScanModal({ isOpen, onClose, materials, onApplied }: Rece
                 e.target.value = ''
               }}
             />
-            <div className="grid grid-cols-2 gap-2">
-              <button
-                onClick={() => cameraInputRef.current?.click()}
-                className="py-3 bg-terracotta-600 text-white rounded-lg font-medium min-h-[44px]"
-              >
-                📷 צלמי
-              </button>
-              <button
-                onClick={() => galleryInputRef.current?.click()}
-                className="py-3 bg-clay-600 text-white rounded-lg font-medium min-h-[44px]"
-              >
-                🖼️ מהגלריה
-              </button>
-            </div>
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className="w-full py-3 bg-terracotta-600 text-white rounded-lg font-medium min-h-[44px]"
+            >
+              📷 בחרי תמונה / צלמי
+            </button>
           </>
         )}
 
