@@ -24,26 +24,32 @@ interface EditableItem {
   apply: boolean
 }
 
+type Phase = 'idle' | 'uploading' | 'analyzing' | 'done'
+
 export function ReceiptScanModal({ isOpen, onClose, materials, onApplied }: ReceiptScanModalProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [imageUrl, setImageUrl] = useState<string | null>(null)
   const [items, setItems] = useState<EditableItem[]>([])
   const [applying, setApplying] = useState(false)
+  const [phase, setPhase] = useState<Phase>('idle')
 
   const parseReceipt = useParseReceipt()
 
   const handleFileSelect = async (file: File) => {
     setItems([])
     setImageUrl(null)
+    setPhase('uploading')
     try {
       const url = await uploadReceiptImage(file)
       setImageUrl(url)
 
+      setPhase('analyzing')
       const result = await parseReceipt.mutateAsync({
         file,
         materials: materials.map((m) => ({ id: m.id, name: m.name })),
       })
 
+      setPhase('done')
       if (result.items.length === 0) {
         toast('לא זוהו חומרים בקבלה', { icon: '⚠️' })
         return
@@ -60,6 +66,7 @@ export function ReceiptScanModal({ isOpen, onClose, materials, onApplied }: Rece
       )
       toast.success(`זוהו ${result.items.length} פריטים`)
     } catch (err) {
+      setPhase('idle')
       const message = err instanceof Error ? err.message : 'שגיאה בעיבוד הקבלה'
       toast.error(message)
     }
@@ -110,6 +117,7 @@ export function ReceiptScanModal({ isOpen, onClose, materials, onApplied }: Rece
   const handleClose = () => {
     setImageUrl(null)
     setItems([])
+    setPhase('idle')
     onClose()
   }
 
@@ -117,7 +125,10 @@ export function ReceiptScanModal({ isOpen, onClose, materials, onApplied }: Rece
     setItems((prev) => prev.map((it, i) => (i === index ? { ...it, ...patch } : it)))
   }
 
-  const isLoading = parseReceipt.isPending
+  const isLoading = phase === 'uploading' || phase === 'analyzing'
+  const progressPct = phase === 'uploading' ? 25 : phase === 'analyzing' ? 65 : 100
+  const phaseLabel =
+    phase === 'uploading' ? 'מעלה תמונה...' : phase === 'analyzing' ? 'מנתח את הקבלה...' : ''
 
   return (
     <Modal isOpen={isOpen} onClose={handleClose} title="סריקת קבלה">
@@ -148,9 +159,19 @@ export function ReceiptScanModal({ isOpen, onClose, materials, onApplied }: Rece
         )}
 
         {isLoading && (
-          <div className="text-center py-8">
-            <div className="inline-block w-12 h-12 border-4 border-terracotta-200 border-t-terracotta-600 rounded-full animate-spin" />
-            <p className="text-sm text-sand-600 mt-3">מנתח את הקבלה...</p>
+          <div className="py-6 text-center space-y-3">
+            <p className="text-sm text-sand-700 font-medium">{phaseLabel}</p>
+            <div className="w-full h-3 bg-sand-200 rounded-full overflow-hidden">
+              <div
+                className={`h-full bg-terracotta-600 transition-all duration-500 ease-out ${
+                  phase === 'analyzing' ? 'animate-pulse' : ''
+                }`}
+                style={{ width: `${progressPct}%` }}
+              />
+            </div>
+            <p className="text-xs text-sand-500">
+              {phase === 'uploading' ? 'מעלה את התמונה לאחסון...' : 'Claude קורא את הקבלה (~5 שניות)...'}
+            </p>
           </div>
         )}
 
