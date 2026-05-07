@@ -42,7 +42,7 @@ export function MaterialCard({ material, onEdit, onQuickUpdate, onReceiveStock }
             className="text-sm bg-success/10 text-success border border-success/30 rounded-lg px-2 py-1 min-h-[32px] hover:bg-success/20"
             title="קבלת חומר — הוספה או תיקון מלאי"
           >
-            + קבלה
+            + הוסיפי
           </button>
           <span
             className={`text-lg font-bold ${isLow ? 'text-danger' : 'text-success'}`}
