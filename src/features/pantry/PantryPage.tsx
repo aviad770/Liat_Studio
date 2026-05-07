@@ -1,7 +1,9 @@
 import { useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { useMaterials, useAddMaterial, useUpdateMaterial, useDeleteMaterial } from './useMaterials'
 import { MaterialCard } from './MaterialCard'
 import { MaterialForm } from './MaterialForm'
+import { ReceiptScanModal } from './ReceiptScanModal'
 import { Modal } from '../../components/ui/Modal'
 import type { Material } from '../../lib/database.types'
 import type { MaterialInput } from '../../lib/schemas'
@@ -11,8 +13,10 @@ export function PantryPage() {
   const addMaterial = useAddMaterial()
   const updateMaterial = useUpdateMaterial()
   const deleteMaterial = useDeleteMaterial()
+  const queryClient = useQueryClient()
 
   const [showAddModal, setShowAddModal] = useState(false)
+  const [showReceiptModal, setShowReceiptModal] = useState(false)
   const [editingMaterial, setEditingMaterial] = useState<Material | null>(null)
 
   const handleAdd = (data: MaterialInput) => {
@@ -70,12 +74,21 @@ export function PantryPage() {
             <p className="text-sm text-danger">{lowStockCount} חומרים מתחת לסף</p>
           )}
         </div>
-        <button
-          onClick={() => setShowAddModal(true)}
-          className="bg-terracotta-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-terracotta-700 min-h-[44px]"
-        >
-          + הוסף חומר
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setShowReceiptModal(true)}
+            className="bg-clay-600 text-white px-3 py-2 rounded-lg font-medium hover:bg-clay-700 min-h-[44px] text-sm"
+            title="סריקת קבלה לעדכון מלאי אוטומטי"
+          >
+            📷 קבלה
+          </button>
+          <button
+            onClick={() => setShowAddModal(true)}
+            className="bg-terracotta-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-terracotta-700 min-h-[44px]"
+          >
+            + הוסף חומר
+          </button>
+        </div>
       </div>
 
       {isLoading ? (
@@ -114,6 +127,13 @@ export function PantryPage() {
           isLoading={addMaterial.isPending}
         />
       </Modal>
+
+      <ReceiptScanModal
+        isOpen={showReceiptModal}
+        onClose={() => setShowReceiptModal(false)}
+        materials={materials ?? []}
+        onApplied={() => queryClient.invalidateQueries({ queryKey: ['materials'] })}
+      />
 
       <Modal
         isOpen={!!editingMaterial}
