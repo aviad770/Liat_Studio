@@ -31,13 +31,16 @@ export function MaterialCard({ material, onEdit, onQuickUpdate, onReceiveStock }
             type="button"
             onClick={(e) => {
               e.stopPropagation()
-              const received = prompt(`כמה גרם התקבלו של ${material.name}?`, '')
+              const received = prompt(
+                `כמה גרם התקבלו של ${material.name}?\n(מספר שלילי לתיקון, למשל -50 כדי להוריד 50 גרם)`,
+                ''
+              )
               if (received !== null && received.trim() !== '') {
                 onReceiveStock(material.id, Number(received))
               }
             }}
             className="text-sm bg-success/10 text-success border border-success/30 rounded-lg px-2 py-1 min-h-[32px] hover:bg-success/20"
-            title="קבלת חומר — הוספה למלאי"
+            title="קבלת חומר — הוספה או תיקון מלאי"
           >
             + קבלה
           </button>

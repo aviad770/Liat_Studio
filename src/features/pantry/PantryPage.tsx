@@ -43,10 +43,11 @@ export function PantryPage() {
   }
 
   const handleReceiveStock = (id: string, addedGrams: number) => {
-    if (isNaN(addedGrams) || addedGrams <= 0) return
+    if (isNaN(addedGrams) || addedGrams === 0) return
     const material = materials?.find((m) => m.id === id)
     if (!material) return
-    updateMaterial.mutate({ id, quantity_grams: material.quantity_grams + addedGrams })
+    const newQty = Math.max(material.quantity_grams + addedGrams, 0)
+    updateMaterial.mutate({ id, quantity_grams: newQty })
   }
 
   if (error) {
