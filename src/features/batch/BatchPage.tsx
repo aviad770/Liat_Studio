@@ -8,7 +8,7 @@ import type { Material } from '../../lib/database.types'
 export function BatchPage() {
   const { data: recipes } = useRecipes(false)
   const [selectedRecipeId, setSelectedRecipeId] = useState<string>('')
-  const [quantityKg, setQuantityKg] = useState<number>(1)
+  const [batches, setBatches] = useState<number>(1)
   const { data: recipeData } = useRecipeWithIngredients(selectedRecipeId || null)
   const { data: allMaterials } = useMaterials()
   const confirmBatch = useConfirmBatch()
@@ -19,7 +19,7 @@ export function BatchPage() {
           ...ing,
           materials: allMaterials.find((m) => m.id === ing.material_id) as Material,
         })).filter((ing) => ing.materials),
-        quantityKg
+        batches
       )
     : []
 
@@ -31,11 +31,11 @@ export function BatchPage() {
       : 'לאשר הכנה ולעדכן מלאי?'
     if (confirm(msg)) {
       confirmBatch.mutate(
-        { recipeId: selectedRecipeId, quantityKg },
+        { recipeId: selectedRecipeId, batches },
         {
           onSuccess: () => {
             setSelectedRecipeId('')
-            setQuantityKg(1)
+            setBatches(1)
           },
         }
       )
@@ -63,11 +63,11 @@ export function BatchPage() {
 
         {selectedRecipeId && (
           <div>
-            <label className="block text-sm font-medium text-sand-700 mb-1">כמות (ק״ג)</label>
+            <label className="block text-sm font-medium text-sand-700 mb-1">מנות (כפולת מתכון)</label>
             <input
               type="number"
-              value={quantityKg}
-              onChange={(e) => setQuantityKg(Number(e.target.value))}
+              value={batches}
+              onChange={(e) => setBatches(Number(e.target.value))}
               min={0.1}
               step={0.1}
               className="w-full px-3 py-3 border border-sand-300 rounded-lg bg-white min-h-[44px]"

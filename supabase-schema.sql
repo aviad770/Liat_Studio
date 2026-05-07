@@ -84,7 +84,9 @@ create trigger materials_updated_at
   before update on materials
   for each row execute function update_updated_at();
 
--- RPC: Atomic batch deduction
+-- RPC: Atomic batch deduction.
+-- weight_ratio is stored as grams per single recipe batch (per Liat's recipe cards).
+-- p_quantity_kg is the batch multiplier (kept for backwards-compat naming).
 create or replace function deduct_batch(
   p_recipe_id uuid,
   p_quantity_kg numeric
@@ -99,7 +101,7 @@ begin
     from recipe_ingredients ri
     where ri.recipe_id = p_recipe_id
   loop
-    deduction_grams := round(ingredient.weight_ratio * p_quantity_kg * 1000);
+    deduction_grams := round(ingredient.weight_ratio * p_quantity_kg);
     update materials
     set quantity_grams = greatest(quantity_grams - deduction_grams, 0)
     where id = ingredient.material_id;

@@ -13,13 +13,10 @@ export interface BatchIngredient {
 
 export function calculateBatch(
   ingredients: (RecipeIngredient & { materials: Material })[],
-  quantityKg: number
+  batches: number
 ): BatchIngredient[] {
-  const totalRatio = ingredients.reduce((sum, i) => sum + i.weight_ratio, 0)
-
   return ingredients.map((ing) => {
-    const fraction = totalRatio > 0 ? ing.weight_ratio / totalRatio : 0
-    const requiredGrams = Math.round(fraction * quantityKg * 1000)
+    const requiredGrams = Math.round(ing.weight_ratio * batches)
     const remainingAfter = ing.materials.quantity_grams - requiredGrams
     const deficit = remainingAfter < 0 ? Math.abs(remainingAfter) : 0
 
@@ -36,18 +33,18 @@ export function calculateBatch(
 export function useConfirmBatch() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async ({ recipeId, quantityKg }: { recipeId: string; quantityKg: number }) => {
+    mutationFn: async ({ recipeId, batches }: { recipeId: string; batches: number }) => {
       // Call the database RPC function for atomic deduction
       const { error: rpcError } = await supabase.rpc('deduct_batch', {
         p_recipe_id: recipeId,
-        p_quantity_kg: quantityKg,
+        p_quantity_kg: batches,
       })
       if (rpcError) throw rpcError
 
-      // Log the batch
+      // Log the batch (quantity_kg column repurposed as batch multiplier)
       const { error: batchError } = await supabase
         .from('batches')
-        .insert({ recipe_id: recipeId, quantity_kg: quantityKg })
+        .insert({ recipe_id: recipeId, quantity_kg: batches })
       if (batchError) throw batchError
     },
     onSuccess: () => {
