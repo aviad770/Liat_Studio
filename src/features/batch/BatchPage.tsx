@@ -68,8 +68,8 @@ export function BatchPage() {
               type="number"
               value={batches}
               onChange={(e) => setBatches(Number(e.target.value))}
-              min={0.1}
-              step={0.1}
+              min={1}
+              step={1}
               className="w-full px-3 py-3 border border-sand-300 rounded-lg bg-white min-h-[44px]"
             />
           </div>
